@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package dataFrame;
+
+option go_package = "./proto;protoSerializer";
+
+message MESSAGE_DATA_FRAME {
+    string FROM = 1;
+    string TO = 2;
+    string TYPE = 3;
+    string ADD_ON = 4;
+    int64 ID = 5;   
+    int64 TS = 6;
+    string DATA = 7;
+}   

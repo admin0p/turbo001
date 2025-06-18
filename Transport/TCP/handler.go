@@ -1,6 +1,7 @@
 package TCP
 
 import (
+	"bufio"
 	"net"
 	"realNow/logger"
 )
@@ -11,21 +12,24 @@ import (
  */
 
 func HandleConnection(conn net.Conn) {
-	buffer := make([]byte, 1024)
+	for {
 
-	// Read data from the connection
-	_, err := conn.Read(buffer)
-	if err != nil {
-		logger.Error("Error reading from connection: ", err.Error())
-		return
+		bufferReader := bufio.NewReader(conn)
+		payload, err := bufferReader.ReadString('\n')
+		if err != nil {
+			logger.Error("Error reading from connection: ", err)
+			conn.Close()
+			return
+		}
+		if payload == "exit\n" {
+			logger.Info("Client requested to close the connection")
+			conn.Close()
+			return
+		}
+		logger.Info("Received payload: ", payload)
+		// Here you would typically unmarshal the payload into a data structure
+		// and process it accordingly. For now, we just log it.
+		conn.Write([]byte("Message received: " + payload + "\n"))
+
 	}
-	logger.Info("Received: ", string(buffer))
-	// Process the data (this is where you would handle your business logic)
-
-	conn.Write([]byte("Hello from server"))
-	logger.Info("Sent: Hello from server")
-	// Close the connection
-	conn.Close()
-	logger.Info("Connection closed")
-
 }
